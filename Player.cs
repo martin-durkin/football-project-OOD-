@@ -1,35 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace football_project
 {
-    public class Player
+    public class Player : Person, IFavouriteable  //Player inherits from Person and also implements the interface
     {
-        // properties
-        public string Name { get; set; }
+
         public string Position { get; set; }
-        public int ShirtNumber { get; set; }
         public string TeamName { get; set; }
+        public int TeamID { get; set; }
+        public DateTime DateAdded { get; set; }
 
 
-        //constructor
-        public Player(string name, string position, int shirtNumber, string teamName)
+        public Player()
         {
-            Name = name;
-            Position = position;
-            ShirtNumber = shirtNumber;
-            TeamName = teamName;
+
         }
 
 
-        //display text for lisstboxes
+        public Player(int id, string name, string position, string teamName, int teamId)
+            : base(id, name)
+        {
+
+            Position = position;
+            TeamName = teamName;
+            TeamID = teamId;
+            DateAdded = DateTime.Now;
+        }
+
+        public override string GetSummary()
+        {
+            return $"{Name} - {Position} ({TeamName})";
+        }
+
         public override string ToString()
         {
-            return $"{Name} - {Position} - #{ShirtNumber}";
+            return $"{Name} - {Position} ({TeamName})";
         }
-
     }
 }

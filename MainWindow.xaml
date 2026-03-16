@@ -5,106 +5,464 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:football_project"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid Margin="10">
+        Title="Football Favourites"
+        Height="660"
+        Width="1020"
+        Background="#F4F6F9">
+
+    <Window.Resources>
+
+        <!-- ===== COLOURS ===== -->
+        <Color x:Key="PrimaryColor">#3F0071</Color>
+        <Color x:Key="PrimaryLightColor">#6A0DAD</Color>
+        <Color x:Key="AccentColor">#C8FF00</Color>
+        <Color x:Key="SurfaceColor">#FFFFFF</Color>
+        <Color x:Key="TextPrimaryColor">#1A1A1A</Color>
+        <Color x:Key="TextSecondaryColor">#666666</Color>
+
+        <SolidColorBrush x:Key="PrimaryBrush"         Color="{StaticResource PrimaryColor}"/>
+        <SolidColorBrush x:Key="PrimaryLightBrush"    Color="{StaticResource PrimaryLightColor}"/>
+        <SolidColorBrush x:Key="AccentBrush"          Color="{StaticResource AccentColor}"/>
+        <SolidColorBrush x:Key="SurfaceBrush"         Color="{StaticResource SurfaceColor}"/>
+        <SolidColorBrush x:Key="TextPrimaryBrush"     Color="{StaticResource TextPrimaryColor}"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush"   Color="{StaticResource TextSecondaryColor}"/>
+
+        <!-- ===== BUTTON STYLE ===== -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background"   Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Foreground"   Value="White"/>
+            <Setter Property="FontWeight"   Value="SemiBold"/>
+            <Setter Property="FontSize"     Value="12"/>
+            <Setter Property="Padding"      Value="12,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"       Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#BBBBBB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== OUTLINED BUTTON STYLE ===== -->
+        <Style x:Key="OutlinedButton" TargetType="Button">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="Foreground"      Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="FontWeight"      Value="SemiBold"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="Padding"         Value="12,8"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="BorderBrush"     Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F0E6FF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="BorderBrush" Value="#BBBBBB"/>
+                                <Setter Property="Foreground"  Value="#BBBBBB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== ACCENT BUTTON STYLE ===== -->
+        <Style x:Key="AccentButton" TargetType="Button">
+            <Setter Property="Background"      Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground"      Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="FontWeight"      Value="Bold"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="Padding"         Value="12,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#AADD00"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== CARD STYLE (white rounded panel) ===== -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background"     Value="White"/>
+            <Setter Property="CornerRadius"   Value="8"/>
+            <Setter Property="Padding"        Value="14"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#000000"
+                                      Opacity="0.08"
+                                      BlurRadius="12"
+                                      ShadowDepth="2"
+                                      Direction="270"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== SECTION LABEL STYLE ===== -->
+        <Style x:Key="SectionLabel" TargetType="TextBlock">
+            <Setter Property="FontSize"     Value="10"/>
+            <Setter Property="FontWeight"   Value="Bold"/>
+            <Setter Property="Foreground"   Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="Margin"       Value="0,0,0,8"/>
+        </Style>
+
+        <!-- ===== TEXTBOX STYLE ===== -->
+        <Style TargetType="TextBox">
+            <Setter Property="Padding"         Value="8,6"/>
+            <Setter Property="BorderBrush"     Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="Background"      Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== LISTBOX STYLE ===== -->
+        <Style TargetType="ListBox">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        </Style>
+
+        <!-- ===== LISTBOXITEM STYLE ===== -->
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="border"
+                                Background="Transparent"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#F0E6FF"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#E0D0FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== DATA TEMPLATE: PLAYERS ===== -->
+        <DataTemplate x:Key="PlayerTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,2">
+                <Border Width="40" Height="22"
+                        Background="{StaticResource PrimaryBrush}"
+                        CornerRadius="3"
+                        Margin="0,0,10,0">
+                    <TextBlock Text="{Binding Position}"
+                               Foreground="White"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="{Binding Name}"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           FontSize="13"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- ===== DATA TEMPLATE: FAVOURITES ===== -->
+        <DataTemplate x:Key="FavouriteTemplate">
+            <StackPanel Orientation="Horizontal" Margin="0,2">
+                <Border Width="40" Height="22"
+                        Background="{StaticResource AccentBrush}"
+                        CornerRadius="3"
+                        Margin="0,0,10,0">
+                    <TextBlock Text="{Binding Position}"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Name}"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <TextBlock Text="{Binding TeamName}"
+                               FontSize="11"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <TextBlock x:Name="tblkHeader"
-                   Grid.Row="0"
-                   Text="Premier League Player Comparison"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"
-                   Margin="0,0,0,10"/>
+        <!-- ===== HEADER CARD ===== -->
+        <Border Grid.Row="0" Style="{StaticResource Card}" Margin="0,0,0,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- Main layout -->
+                <!-- Premier League Badge -->
+                <Image Grid.Column="0"
+                       Source="/images/premier-league-badge.png"
+                       Height="50"
+                       Width="50"
+                       VerticalAlignment="Center"
+                       Margin="0,0,14,0"/>
+
+                <!-- Title -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="Football Favourites"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Text="Premier League Squad Browser"
+                               FontSize="12"
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+
+                <!-- View Saved Button -->
+                <Button Grid.Column="2"
+                        x:Name="btnViewSaved"
+                        Content="VIEW SAVED FAVOURITES"
+                        Click="btnViewSaved_Click"
+                        Style="{StaticResource PrimaryButton}"
+                        VerticalAlignment="Center"
+                        Height="36"/>
+            </Grid>
+        </Border>
+
+        <!-- ===== MAIN LAYOUT ===== -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="1.8*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- left: Teams -->
-            <GroupBox Grid.Column="0" Header="Teams" Margin="0,0,10,0">
-                <StackPanel Margin="10">
+            <!-- ===== LEFT: TEAMS ===== -->
+            <Border Grid.Column="0"
+                    Style="{StaticResource Card}"
+                    Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <ComboBox x:Name="cbxTeamFilter"
-                              Height="25"
-                              Margin="0,0,0,10">
-                        <ComboBoxItem Content="All Teams" IsSelected="True"/>
-                        <ComboBoxItem Content="Premier League"/>
-                    </ComboBox>
+                    <TextBlock Grid.Row="0"
+                               Text="PREMIER LEAGUE TEAMS"
+                               Style="{StaticResource SectionLabel}"/>
 
-                    <ListBox
-                        x:Name="lbxTeams" 
-                        SelectionChanged="lbxTeams_SelectionChanged">
-                        
-                    </ListBox>
+                    <ListBox Grid.Row="1"
+                             x:Name="lbxTeams"
+                             SelectionChanged="lbxTeams_SelectionChanged"/>
 
-                </StackPanel>
-            </GroupBox>
+                    <!-- Manager Card -->
+                    <Border Grid.Row="2"
+                            x:Name="pnlManager"
+                            Background="{StaticResource PrimaryBrush}"
+                            CornerRadius="6"
+                            Padding="12,10"
+                            Margin="0,10,0,0"
+                            Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal">
+                          
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="MANAGER"
+                                           FontSize="10"
+                                           FontWeight="Bold"
+                                           Foreground="#AAAAFF"
+                                           Margin="0,0,0,2"/>
+                                <TextBlock x:Name="txtManagerName"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="White"/>
+                                <TextBlock x:Name="txtManagerNationality"
+                                           FontSize="12"
+                                           Foreground="#CCCCFF"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
 
-            <!-- middle: Players -->
-            <GroupBox Grid.Column="1" Header="Players" Margin="0,0,10,0">
-                <StackPanel Margin="10">
+                </Grid>
+            </Border>
 
-                    <TextBox x:Name="tbxPlayerSearch"
-                             Height="25"
-                             Margin="0,0,0,10"
-                             Text="Select a team to view players"/>
+            <!-- ===== MIDDLE: PLAYERS ===== -->
+            <Border Grid.Column="1"
+                    Style="{StaticResource Card}"
+                    Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                    <ListBox
-                        x:Name="lbxPlayers">
-                      
-                    </ListBox>
+                    <TextBlock Grid.Row="0"
+                               Text="SQUAD PLAYERS"
+                               Style="{StaticResource SectionLabel}"/>
 
-                </StackPanel>
-            </GroupBox>
+                    <TextBox Grid.Row="1"
+                             x:Name="txtSearch"
+                             TextChanged="txtSearch_TextChanged"
+                             Height="34"
+                             Margin="0,0,0,8"/>
 
-            <!-- Right side: Actions and Selected -->
-            <GroupBox Grid.Column="2" Header="Actions">
-                <StackPanel Margin="10">
+                    <!-- Filter Buttons -->
+                    <WrapPanel Grid.Row="2" Margin="0,0,0,8">
+                        <Button Content="ALL"  Click="btnFilter_Click" Tag="All"
+                                Style="{StaticResource OutlinedButton}"
+                                Height="28" Padding="10,2" Margin="0,0,4,4"/>
+                        <Button Content="GK"   Click="btnFilter_Click" Tag="GK"
+                                Style="{StaticResource OutlinedButton}"
+                                Height="28" Padding="10,2" Margin="0,0,4,4"/>
+                        <Button Content="DEF"  Click="btnFilter_Click" Tag="DEF"
+                                Style="{StaticResource OutlinedButton}"
+                                Height="28" Padding="10,2" Margin="0,0,4,4"/>
+                        <Button Content="MID"  Click="btnFilter_Click" Tag="MID"
+                                Style="{StaticResource OutlinedButton}"
+                                Height="28" Padding="10,2" Margin="0,0,4,4"/>
+                        <Button Content="FWD"  Click="btnFilter_Click" Tag="FWD"
+                                Style="{StaticResource OutlinedButton}"
+                                Height="28" Padding="10,2" Margin="0,0,0,4"/>
+                    </WrapPanel>
 
-                    <Button x:Name="btnAddPlayer"
-                            Content="Add Player"
+                    <ListBox Grid.Row="3"
+                             x:Name="lbxPlayers"
+                             ItemTemplate="{StaticResource PlayerTemplate}"/>
+
+                </Grid>
+            </Border>
+
+            <!-- ===== RIGHT: FAVOURITES ===== -->
+            <Border Grid.Column="2" Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Text="MY FAVOURITES"
+                               Style="{StaticResource SectionLabel}"/>
+
+                    <Button Grid.Row="1"
+                            x:Name="btnAddPlayer"
+                            Content="ADD SELECTED"
                             Click="btnAddPlayer_Click"
-                            Height="30"
-                            Margin="0,0,0,10"/>
+                            Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Stretch"
+                            Height="34"
+                            Margin="0,0,0,6"/>
 
-                    <Button x:Name="btnAddRandomPlayer"
-                            Content="Add Random Player"
+                    <Button Grid.Row="2"
+                            x:Name="btnAddRandomPlayer"
+                            Content="ADD RANDOM"
                             Click="btnAddRandomPlayer_Click"
-                            Height="30"
-                            Margin="0,0,0,10"/>
+                            Style="{StaticResource OutlinedButton}"
+                            HorizontalAlignment="Stretch"
+                            IsEnabled="False"
+                            Height="34"
+                            Margin="0,0,0,6"/>
 
-                    <Button x:Name="btnRemovePlayer"
-                            Content="Remove Player"
+                    <Button Grid.Row="3"
+                            x:Name="btnRemovePlayer"
+                            Content="REMOVE SELECTED"
                             Click="btnRemovePlayer_Click"
-                            Height="30"
-                            Margin="0,0,0,20"/>
+                            Style="{StaticResource OutlinedButton}"
+                            HorizontalAlignment="Stretch"
+                            Height="34"
+                            Margin="0,0,0,12"/>
 
-                    <TextBlock x:Name="tblkSelectedPlayers"
-                               Text="Selected Players"
-                               FontWeight="Bold"
-                               Margin="0,0,0,10"/>
+                    <ListBox Grid.Row="4"
+                             x:Name="lbxSelectedPlayers"
+                             ItemTemplate="{StaticResource FavouriteTemplate}"
+                             Margin="0,0,0,10"/>
 
-                    <ListBox x:Name="lbxSelectedPlayers" MinHeight="80" Margin="0,0,0,10">
-                    </ListBox>
+                    <Button Grid.Row="5"
+                            x:Name="btnSaveFavourites"
+                            Content="SAVE TO DATABASE"
+                            Click="btnSaveFavourites_Click"
+                            Style="{StaticResource AccentButton}"
+                            HorizontalAlignment="Stretch"
+                            Height="34"/>
 
-                    <!--Compare the selected players -->
-                    <Button x:Name="btnCompare"
-                            Click="btnCompare_Click"
-                            Content="Compare"
-                            Height="30"
-                            Margin="0,10,0,0"/>
-
-                </StackPanel>
-            </GroupBox>
+                </Grid>
+            </Border>
 
         </Grid>
     </Grid>

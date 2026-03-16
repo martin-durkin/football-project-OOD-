@@ -1,33 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace football_project
 {
     public class Team
     {
-        // properties
+        public int ID { get; set; }
         public string Name { get; set; }
+        public string Gender { get; set; }
         public List<Player> Players { get; set; }
 
+        public Team() { }
 
-        //constructor
-        public Team(string name)
+        public Team(int id, string name, string gender)
         {
+            ID = id;
             Name = name;
+            Gender = gender;
             Players = new List<Player>();
         }
 
-        public void AddPlayer(Player p)
-        {
-            Players.Add(p);
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
+       
     }
 }

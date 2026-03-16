@@ -1,182 +1,347 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace football_project
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Team> teams = new List<Team>();
+        private APIService api = new APIService();
         private Random rand = new Random();
+        private List<Player> currentSquad = new List<Player>();
+
+        // ObservableCollection - UI updates automatically when items added/removed
+        private ObservableCollection<Player> favourites = new ObservableCollection<Player>();
+
+        private string currentFilter = "All";
+
         public MainWindow()
         {
             InitializeComponent();
 
-            SetupTeams();
-            LoadTeamsToListBox();
+            // Bind favourites ObservableCollection to listbox
+            lbxSelectedPlayers.ItemsSource = favourites;
 
-        }
-
-        private void SetupTeams()
-        {
-            //setup teams and populate them
-            Team t1 = new Team("Leeds United");
-            t1.AddPlayer(new Player("Ethan Ampadu", "MID", 4, "Leeds United"));
-            t1.AddPlayer(new Player("Dominic Calvert-Lewin", "ST", 9, "Leeds United"));
-            t1.AddPlayer(new Player("Jaka Bijol", "DEF", 15, "Leeds United"));
-
-            Team t2 = new Team("Chelsea");
-            t2.AddPlayer(new Player("Enzo Fernandez", "MID", 8, "Chelsea"));
-            t2.AddPlayer(new Player("Liam Delap", "ST", 9, "Chelsea"));
-            t2.AddPlayer(new Player("Reece James", "DEF", 24, "Chelsea"));
-
-            Team t3 = new Team("Manchester City");
-            t3.AddPlayer(new Player("Erling Haaland", "ST", 9, "Manchester City"));
-            t3.AddPlayer(new Player("Rayan Cherki", "MID", 10, "Manchester City"));
-            t3.AddPlayer(new Player("Ruben Dias", "DEF", 3, "Manchester City"));
-
-            teams.Add(t1);
-            teams.Add(t2);
-            teams.Add(t3);
-
-        }
-
-        //load teams to listbox
-        private void LoadTeamsToListBox()
-        {
-            lbxTeams.Items.Clear();
-
-
-            foreach (Team t in teams)
+            string[] premierLeagueTeams =
             {
-                lbxTeams.Items.Add(t);
+                "Arsenal",
+                "Aston Villa",
+                "Bournemouth",
+                "Brentford",
+                "Brighton & Hove Albion",
+                "Chelsea",
+                "Crystal Palace",
+                "Everton",
+                "Fulham",
+                "Ipswich Town",
+                "Leeds United",
+                "Liverpool",
+                "Manchester City",
+                "Manchester United",
+                "Newcastle United",
+                "Nottingham Forest",
+                "Southampton",
+                "Tottenham Hotspur",
+                "West Ham United",
+                "Wolverhampton Wanderers"
+            };
+
+            lbxTeams.ItemsSource = premierLeagueTeams;
+        }
+
+        // TEAM SELECTION
+        private async void lbxTeams_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selectedTeamName = lbxTeams.SelectedItem as string;
+
+            if (selectedTeamName == null) return;
+
+            // Reset UI
+            lbxPlayers.ItemsSource = null;
+            currentSquad.Clear();
+            btnAddRandomPlayer.IsEnabled = false;
+            txtSearch.Text = "";
+            currentFilter = "All";
+            pnlManager.Visibility = Visibility.Collapsed;
+
+            try
+            {
+                List<Team> foundTeams = await api.SearchTeamsAsync(selectedTeamName);
+
+                if (foundTeams == null || foundTeams.Count == 0)
+                {
+                    MessageBox.Show("Could not find that team in the API.");
+                    return;
+                }
+
+                Team matchedTeam = null;
+
+                for (int i = 0; i < foundTeams.Count; i++)
+                {
+                    if (foundTeams[i].Name.ToLower() == selectedTeamName.ToLower())
+                    {
+                        if (foundTeams[i].Gender == "M")
+                        {
+                            matchedTeam = foundTeams[i];
+                        }
+                    }
+                }
+
+                if (matchedTeam == null)
+                {
+                    MessageBox.Show("Could not find the men's team.");
+                    return;
+                }
+
+                // GetTeamSquadAsync returns both players and manager as a tuple
+                var result = await api.GetTeamSquadAsync(matchedTeam.ID, matchedTeam.Name);
+
+                currentSquad = result.Players;
+
+                // Display manager card and team badge if data was returned
+                if (result.Manager != null)
+                {
+                    txtManagerName.Text = result.Manager.Name;
+                    txtManagerNationality.Text = result.Manager.Nationality;
+                    pnlManager.Visibility = Visibility.Visible;
+                }
+
+                
+
+                if (currentSquad == null || currentSquad.Count == 0)
+                {
+                    MessageBox.Show("No squad returned for this team.");
+                    return;
+                }
+
+                // LINQ - sort by position order then name
+                currentSquad = currentSquad
+                    .OrderBy(p => PositionOrder(p.Position))
+                    .ThenBy(p => p.Name)
+                    .ToList();
+
+                ApplyFilter();
+                btnAddRandomPlayer.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading team: " + ex.Message);
             }
         }
 
-        private void lbxTeams_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // FILTERING AND SEARCHING
+        private void btnFilter_Click(object sender, RoutedEventArgs e)
         {
-            Team selectedTeam = lbxTeams.SelectedItem as Team;
+            Button btn = sender as Button;
+            if (btn == null) return;
+            currentFilter = btn.Tag.ToString();
+            ApplyFilter();
+        }
 
+        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFilter();
+        }
 
-            if (selectedTeam == null)
+        private void ApplyFilter()
+        {
+            if (currentSquad == null || currentSquad.Count == 0)
             {
+                lbxPlayers.ItemsSource = null;
                 return;
-
             }
 
-            lbxPlayers.Items.Clear();
+            string searchText = txtSearch.Text?.ToLower() ?? "";
 
-            foreach (Player p in selectedTeam.Players)
+            // LINQ - filter by position and search text
+            IEnumerable<Player> filtered = currentSquad;
+
+            if (currentFilter != "All")
             {
-                lbxPlayers.Items.Add(p);
+                filtered = filtered.Where(p => p.Position == currentFilter);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                filtered = filtered.Where(p => p.Name.ToLower().Contains(searchText));
+            }
+
+            lbxPlayers.ItemsSource = filtered.ToList();
+        }
+
+        private int PositionOrder(string position)
+        {
+            switch (position)
+            {
+                case "GK":
+                    return 1;
+                case "DEF":
+                    return 2;
+                case "MID":
+                    return 3;
+                case "FWD":
+                    return 4;
+                default:
+                    return 5;
             }
         }
 
+
+        //Favourites Management
         private void btnAddPlayer_Click(object sender, RoutedEventArgs e)
         {
-            Player p = lbxPlayers.SelectedItem as Player;
-            if (p == null)
+            try
             {
-                MessageBox.Show("Please select a player first.");
-                return;
+                Player p = lbxPlayers.SelectedItem as Player;
+
+                if (p == null)
+                {
+                    MessageBox.Show("Please select a player first.");
+                    return;
+                }
+
+                if (PlayerAlreadySelected(p))
+                {
+                    MessageBox.Show("That player is already in your favourites.");
+                    return;
+                }
+
+                favourites.Add(p);
+                MessageBox.Show(p.Name + " added to favourites.");
             }
-
-             if (PlayerAlreadySelected(p))
-              {
-                  MessageBox.Show("That player is already selected.");
-                  return;
-              }
-
-              lbxSelectedPlayers.Items.Add(p);
-            
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error adding player: " + ex.Message);
+            }
         }
 
         private void btnAddRandomPlayer_Click(object sender, RoutedEventArgs e)
         {
-            Team selectedTeam = lbxTeams.SelectedItem as Team;
-            if (selectedTeam == null)
+            try
             {
-                MessageBox.Show("Please select a team first.");
-                return;
-            }
+                if (currentSquad == null || currentSquad.Count == 0)
+                {
+                    MessageBox.Show("Please select a team first to load the squad.");
+                    return;
+                }
 
-            if (selectedTeam.Players.Count == 0)
+                int index = rand.Next(currentSquad.Count);
+                Player randomPlayer = currentSquad[index];
+
+                if (PlayerAlreadySelected(randomPlayer))
+                {
+                    MessageBox.Show("That player is already in your favourites.");
+                    return;
+                }
+
+                favourites.Add(randomPlayer);
+                MessageBox.Show(randomPlayer.Name + " added to favourites.");
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show("The selected team has no players.");
-                return;
+                MessageBox.Show("Error adding random player: " + ex.Message);
             }
-
-            int playerIndex = rand.Next(selectedTeam.Players.Count);
-            Player randomPlayer = selectedTeam.Players[playerIndex];
-
-            if (PlayerAlreadySelected(randomPlayer))
-            {
-                MessageBox.Show("That player is already selected.");
-                return;
-            }
-
-            lbxSelectedPlayers.Items.Add(randomPlayer);
         }
 
         private void btnRemovePlayer_Click(object sender, RoutedEventArgs e)
         {
-            Player p = lbxSelectedPlayers.SelectedItem as Player;
-            if (p == null)
+            try
             {
-                MessageBox.Show("Select a player to remove.");
-                return;
-            }
+                Player p = lbxSelectedPlayers.SelectedItem as Player;
 
-            lbxSelectedPlayers.Items.Remove(p);
-        }
-
-        private void btnCompare_Click(object sender, RoutedEventArgs e)
-        {
-            if (lbxSelectedPlayers.Items.Count == 0)
-            {
-                MessageBox.Show("Add at least 1 player to compare.");
-                return;
-            }
-
-            string output = "";
-
-            foreach (Player p in lbxSelectedPlayers.Items)
-            {
-                output += p.ToString() + Environment.NewLine;
-            }
-
-            MessageBox.Show("Selected Players:\n\n" + output);
-        }
-
-        private bool PlayerAlreadySelected(Player p)
-        {
-            foreach (Player existing in lbxSelectedPlayers.Items)
-            {
-                if (existing.Name == p.Name && existing.TeamName == p.TeamName)
+                if (p == null)
                 {
-                    return true;
+                    MessageBox.Show("Select a favourite player to remove.");
+                    return;
+                }
+
+                favourites.Remove(p);
+                MessageBox.Show(p.Name + " removed from favourites.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error removing player: " + ex.Message);
+            }
+        }
+
+        // DATABASE - STUBBED UNTIL EF CORE IS ADDED
+
+        private void btnSaveFavourites_Click(object sender, RoutedEventArgs e)
+        {
+            if (favourites.Count == 0)
+            {
+                MessageBox.Show("Add at least 1 player to favourites before saving.");
+                return;
+            }
+
+            try
+            {
+                using (FootballDbContext db = new FootballDbContext())
+                {
+                    int saved = 0;
+                    int skipped = 0;
+
+                    foreach (Player p in favourites)
+                    {
+                        // LINQ - check if already saved
+                        bool exists = db.FavouritePlayers
+                            .Any(x => x.PlayerID == p.ID && x.TeamID == p.TeamID);
+
+                        if (!exists)
+                        {
+                            db.FavouritePlayers.Add(new FavouritePlayer
+                            {
+                                PlayerID = p.ID,
+                                Name = p.Name,
+                                Position = p.Position,
+                                TeamName = p.TeamName,
+                                TeamID = p.TeamID,
+                                DateAdded = DateTime.Now
+                            });
+                            saved++;
+                        }
+                        else
+                        {
+                            skipped++;
+                        }
+                    }
+
+                    db.SaveChanges();
+
+                    string msg = saved + " player(s) saved.";
+                    if (skipped > 0) msg += "\n" + skipped + " already existed and were skipped.";
+                    MessageBox.Show(msg);
                 }
             }
-            return false;
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error saving: " + ex.Message);
+            }
+        }
+        
+
+        // NAVIGATION
+        private void btnViewSaved_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                FavouritesWindow win = new FavouritesWindow();
+                win.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening favourites window: " + ex.Message);
+            }
         }
 
-
-
+        // HELPERS
+        private bool PlayerAlreadySelected(Player p)
+        {
+            // LINQ - check for duplicate by ID and TeamID
+            return favourites.Any(existing => existing.ID == p.ID && existing.TeamID == p.TeamID);
+        }
     }
 }
-
-
