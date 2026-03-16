@@ -218,6 +218,8 @@ namespace football_project
             }
         }
 
+        //selects a random player from the currently selected team
+        //adds them to the selected players listbox
         private void btnAddRandomPlayer_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -245,6 +247,9 @@ namespace football_project
                 MessageBox.Show("Error adding random player: " + ex.Message);
             }
         }
+
+
+        //removes the selected player from the selected players listbox
 
         private void btnRemovePlayer_Click(object sender, RoutedEventArgs e)
         {
