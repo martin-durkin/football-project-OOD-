@@ -127,6 +127,8 @@ namespace football_project
                 }
 
                 string json = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine(json); // ADD THIS
+
                 //deserialize into our specific SquadResponse class
                 //Newtonsoft uses the [JsonProperty] attributes on SquadResponse
                 //to map the JSON keys to the right properties automatically.

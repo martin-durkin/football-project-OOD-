@@ -65,7 +65,6 @@ namespace football_project
             btnAddRandomPlayer.IsEnabled = false;
             txtSearch.Text = "";
             currentFilter = "All";
-            pnlManager.Visibility = Visibility.Collapsed;
 
             try
             {
@@ -101,15 +100,7 @@ namespace football_project
 
                 currentSquad = result.Players;
 
-                // Display manager card and team badge if data was returned
-                if (result.Manager != null)
-                {
-                    txtManagerName.Text = result.Manager.Name;
-                    txtManagerNationality.Text = result.Manager.Nationality;
-                    pnlManager.Visibility = Visibility.Visible;
-                }
-
-                
+                              
 
                 if (currentSquad == null || currentSquad.Count == 0)
                 {
