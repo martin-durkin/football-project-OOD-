@@ -26,7 +26,7 @@ namespace football_project
             }
         }
 
-        public async Task<List<Team>> SearchTeamsAsync(string searchText) //testq
+        public async Task<List<Team>> SearchTeamsAsync(string searchText) 
         {
             List<Team> result = new List<Team>();
 
@@ -128,7 +128,8 @@ namespace football_project
 
                 string json = await response.Content.ReadAsStringAsync();
                 //deserialize into our specific SquadResponse class
-                //Newtonsoft uses the [JsonProperty] attributes on SquadResponse to map the JSON keys to the right properties automatically.
+                //Newtonsoft uses the [JsonProperty] attributes on SquadResponse
+                //to map the JSON keys to the right properties automatically.
                 SquadResponse data = JsonConvert.DeserializeObject<SquadResponse>(json);
 
                 if (data == null)

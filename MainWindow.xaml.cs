@@ -73,7 +73,7 @@ namespace football_project
 
                 if (foundTeams == null || foundTeams.Count == 0)
                 {
-                    MessageBox.Show("Could not find that team in the API.");
+                    ShowDialog("Could not find that team in the API.");
                     return;
                 }
 
@@ -92,7 +92,7 @@ namespace football_project
 
                 if (matchedTeam == null)
                 {
-                    MessageBox.Show("Could not find the men's team.");
+                    ShowDialog("Could not find the men's team.");
                     return;
                 }
 
@@ -113,7 +113,7 @@ namespace football_project
 
                 if (currentSquad == null || currentSquad.Count == 0)
                 {
-                    MessageBox.Show("No squad returned for this team.");
+                    ShowDialog("No squad returned for this team.");
                     return;
                 }
 
@@ -128,7 +128,7 @@ namespace football_project
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error loading team: " + ex.Message);
+                ShowDialog("Error loading team: " + ex.Message);
             }
         }
 
@@ -199,22 +199,21 @@ namespace football_project
 
                 if (p == null)
                 {
-                    MessageBox.Show("Please select a player first.");
+                    ShowDialog("Please select a player first.");
                     return;
                 }
 
                 if (PlayerAlreadySelected(p))
                 {
-                    MessageBox.Show("That player is already in your favourites.");
+                    ShowDialog("That player is already in your favourites.");
                     return;
                 }
 
                 favourites.Add(p);
-                MessageBox.Show(p.Name + " added to favourites.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error adding player: " + ex.Message);
+                ShowDialog("Error adding player: " + ex.Message);
             }
         }
 
@@ -226,7 +225,7 @@ namespace football_project
             {
                 if (currentSquad == null || currentSquad.Count == 0)
                 {
-                    MessageBox.Show("Please select a team first to load the squad.");
+                    ShowDialog("Please select a team first to load the squad.");
                     return;
                 }
 
@@ -235,16 +234,15 @@ namespace football_project
 
                 if (PlayerAlreadySelected(randomPlayer))
                 {
-                    MessageBox.Show("That player is already in your favourites.");
+                    ShowDialog("That player is already in your favourites.");
                     return;
                 }
 
                 favourites.Add(randomPlayer);
-                MessageBox.Show(randomPlayer.Name + " added to favourites.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error adding random player: " + ex.Message);
+                ShowDialog("Error adding random player: " + ex.Message);
             }
         }
 
@@ -259,16 +257,16 @@ namespace football_project
 
                 if (p == null)
                 {
-                    MessageBox.Show("Select a favourite player to remove.");
+                    ShowDialog("Select a favourite player to remove.");
                     return;
                 }
 
                 favourites.Remove(p);
-                MessageBox.Show(p.Name + " removed from favourites.");
+                ShowDialog(p.Name + " removed from favourites.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error removing player: " + ex.Message);
+                ShowDialog("Error removing player: " + ex.Message);
             }
         }
 
@@ -278,7 +276,7 @@ namespace football_project
         {
             if (favourites.Count == 0)
             {
-                MessageBox.Show("Add at least 1 player to favourites before saving.");
+                ShowDialog("Add at least 1 player to favourites before saving.");
                 return;
             }
 
@@ -318,12 +316,12 @@ namespace football_project
 
                     string msg = saved + " player(s) saved.";
                     if (skipped > 0) msg += "\n" + skipped + " already existed and were skipped.";
-                    MessageBox.Show(msg);
+                    ShowDialog(msg);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error saving: " + ex.Message);
+                ShowDialog("Error saving: " + ex.Message);
             }
         }
         
@@ -338,7 +336,7 @@ namespace football_project
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error opening favourites window: " + ex.Message);
+                ShowDialog("Error opening favourites window: " + ex.Message);
             }
         }
 
@@ -347,6 +345,19 @@ namespace football_project
         {
             // LINQ - check for duplicate by ID and TeamID
             return favourites.Any(existing => existing.ID == p.ID && existing.TeamID == p.TeamID);
+        }
+
+        //using dialog window instaed of message box
+        private void ShowDialog(string message)
+        {
+            new DialogWindow(this, message).ShowDialog();
+        }
+
+        private bool ShowConfirm(string message)
+        {
+            var dlg = new DialogWindow(this, message, true);
+            dlg.ShowDialog();
+            return dlg.Result;
         }
     }
 }

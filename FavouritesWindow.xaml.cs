@@ -23,7 +23,6 @@ namespace football_project
             {
                 using (FootballDbContext db = new FootballDbContext())
                 {
-                    // LINQ - load all saved players ordered by date then name
                     allSaved = db.FavouritePlayers
                         .OrderByDescending(p => p.DateAdded)
                         .ThenBy(p => p.Name)
@@ -32,9 +31,9 @@ namespace football_project
 
                 ApplyLinqFilter(filter);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                txtStatus.Text = "Error loading from database: " + ex.Message;
+                txtStatus.Text = "Error loading from database.";
             }
         }
 
@@ -63,14 +62,10 @@ namespace football_project
                 case "DEF":
                 case "MID":
                 case "FWD":
-
-                    // LINQ - filter by position
                     result = allSaved.Where(p => p.Position == filter);
                     break;
 
                 case "Week":
-
-                    // LINQ - players added in the last 7 days
                     DateTime oneWeekAgo = DateTime.Now.AddDays(-7);
                     result = allSaved.Where(p => p.DateAdded >= oneWeekAgo);
                     break;
@@ -85,29 +80,22 @@ namespace football_project
             txtStatus.Text = filtered.Count + " player(s) shown  |  " + allSaved.Count + " total saved";
         }
 
+
+
         // DELETE FROM DATABASE
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             FavouritePlayer selected = lbxSaved.SelectedItem as FavouritePlayer;
+            if (selected == null) return;
 
-            if (selected == null)
-            {
-                MessageBox.Show("Select a player to delete.");
-                return;
-            }
-
-            MessageBoxResult confirm = MessageBox.Show(
-                "Remove " + selected.Name + " from saved favourites?",
-                "Confirm Delete",
-                MessageBoxButton.YesNo);
-
-            if (confirm != MessageBoxResult.Yes) return;
+            var dlg = new DialogWindow(this, "Remove " + selected.Name + " from saved favourites?", true);
+            dlg.ShowDialog();
+            if (!dlg.Result) return;
 
             try
             {
                 using (FootballDbContext db = new FootballDbContext())
                 {
-                    // LINQ - find the player in the database
                     FavouritePlayer toDelete = db.FavouritePlayers
                         .FirstOrDefault(p => p.FavouritePlayerID == selected.FavouritePlayerID);
 
@@ -115,14 +103,13 @@ namespace football_project
                     {
                         db.FavouritePlayers.Remove(toDelete);
                         db.SaveChanges();
-                        MessageBox.Show(selected.Name + " removed.");
                         LoadFromDatabase("All");
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("Error deleting player: " + ex.Message);
+                txtStatus.Text = "Something went wrong deleting that player.";
             }
         }
     }

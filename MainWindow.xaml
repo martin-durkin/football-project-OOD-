@@ -376,6 +376,7 @@
                              x:Name="txtSearch"
                              TextChanged="txtSearch_TextChanged"
                              Height="34"
+                             Padding="1,1,1,1"
                              Margin="0,0,0,8"/>
 
                     <!-- Filter Buttons -->
