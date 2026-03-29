@@ -5,8 +5,6 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "football-project", "football-project.csproj", "{EC4C2C1E-57ED-432A-B367-3341A95A7F6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "endpoint-test", "..\endpoint-test\endpoint-test.csproj", "{C578C5FE-9C45-4C65-A7C7-DAD747BEA813}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{EC4C2C1E-57ED-432A-B367-3341A95A7F6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC4C2C1E-57ED-432A-B367-3341A95A7F6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC4C2C1E-57ED-432A-B367-3341A95A7F6E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C578C5FE-9C45-4C65-A7C7-DAD747BEA813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C578C5FE-9C45-4C65-A7C7-DAD747BEA813}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C578C5FE-9C45-4C65-A7C7-DAD747BEA813}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C578C5FE-9C45-4C65-A7C7-DAD747BEA813}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
