@@ -326,17 +326,18 @@
                              x:Name="lbxTeams"
                              SelectionChanged="lbxTeams_SelectionChanged"/>
 
-                   
+
 
                 </Grid>
             </Border>
 
             <!-- ===== MIDDLE: PLAYERS ===== -->
             <Border Grid.Column="1"
-                    Style="{StaticResource Card}"
-                    Margin="0,0,10,0">
+        Style="{StaticResource Card}"
+        Margin="0,0,10,0">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -344,38 +345,46 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0"
-                               Text="SQUAD PLAYERS"
-                               Style="{StaticResource SectionLabel}"/>
+                   Text="SQUAD PLAYERS"
+                   Style="{StaticResource SectionLabel}"/>
 
                     <TextBox Grid.Row="1"
-                             x:Name="txtSearch"
-                             TextChanged="txtSearch_TextChanged"
-                             Height="34"
-                             Padding="1,1,1,1"
-                             Margin="0,0,0,8"/>
+                 x:Name="txtSearch"
+                 TextChanged="txtSearch_TextChanged"
+                 Height="34"
+                 Padding="1,1,1,1"
+                 Margin="0,0,0,8"/>
 
                     <!-- Filter Buttons -->
                     <WrapPanel Grid.Row="2" Margin="0,0,0,8">
                         <Button Content="ALL"  Click="btnFilter_Click" Tag="All"
-                                Style="{StaticResource OutlinedButton}"
-                                Height="28" Padding="10,2" Margin="0,0,4,4"/>
+                    Style="{StaticResource OutlinedButton}"
+                    Height="28" Padding="10,2" Margin="0,0,4,4"/>
                         <Button Content="GK"   Click="btnFilter_Click" Tag="GK"
-                                Style="{StaticResource OutlinedButton}"
-                                Height="28" Padding="10,2" Margin="0,0,4,4"/>
+                    Style="{StaticResource OutlinedButton}"
+                    Height="28" Padding="10,2" Margin="0,0,4,4"/>
                         <Button Content="DEF"  Click="btnFilter_Click" Tag="DEF"
-                                Style="{StaticResource OutlinedButton}"
-                                Height="28" Padding="10,2" Margin="0,0,4,4"/>
+                    Style="{StaticResource OutlinedButton}"
+                    Height="28" Padding="10,2" Margin="0,0,4,4"/>
                         <Button Content="MID"  Click="btnFilter_Click" Tag="MID"
-                                Style="{StaticResource OutlinedButton}"
-                                Height="28" Padding="10,2" Margin="0,0,4,4"/>
+                    Style="{StaticResource OutlinedButton}"
+                    Height="28" Padding="10,2" Margin="0,0,4,4"/>
                         <Button Content="FWD"  Click="btnFilter_Click" Tag="FWD"
-                                Style="{StaticResource OutlinedButton}"
-                                Height="28" Padding="10,2" Margin="0,0,0,4"/>
+                    Style="{StaticResource OutlinedButton}"
+                    Height="28" Padding="10,2" Margin="0,0,0,4"/>
                     </WrapPanel>
 
-                    <ListBox Grid.Row="3"
-                             x:Name="lbxPlayers"
-                             ItemTemplate="{StaticResource PlayerTemplate}"/>
+                    <!-- Squad Counter -->
+                    <TextBlock Grid.Row="3"
+                   x:Name="txtSquadCount"
+                   Text=""
+                   FontSize="11"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   Margin="0,0,0,6"/>
+
+                    <ListBox Grid.Row="4"
+                 x:Name="lbxPlayers"
+                 ItemTemplate="{StaticResource PlayerTemplate}"/>
 
                 </Grid>
             </Border>

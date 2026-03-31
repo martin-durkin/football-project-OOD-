@@ -65,6 +65,7 @@ namespace football_project
             btnAddRandomPlayer.IsEnabled = false;
             txtSearch.Text = "";
             currentFilter = "All";
+            txtSquadCount.Text = "";
 
             try
             {
@@ -96,9 +97,8 @@ namespace football_project
                 }
 
                 // GetTeamSquadAsync returns both players and manager as a tuple
-                var result = await api.GetTeamSquadAsync(matchedTeam.ID, matchedTeam.Name);
+                currentSquad = await api.GetTeamSquadAsync(matchedTeam.ID, matchedTeam.Name);
 
-                currentSquad = result.Players;
 
                               
 
@@ -115,6 +115,7 @@ namespace football_project
                     .ToList();
 
                 ApplyFilter();
+                UpdateSquadCounter();   
                 btnAddRandomPlayer.IsEnabled = true;
             }
             catch (Exception ex)
@@ -162,6 +163,29 @@ namespace football_project
 
             lbxPlayers.ItemsSource = filtered.ToList();
         }
+
+
+        //Squad counter
+        private void UpdateSquadCounter()
+        {
+            if (currentSquad == null || currentSquad.Count == 0)
+            {
+                txtSquadCount.Text = "";
+                return;
+            }
+
+            // LINQ - count players by position
+            int gk = currentSquad.Count(p => p.Position == "GK");
+            int def = currentSquad.Count(p => p.Position == "DEF");
+            int mid = currentSquad.Count(p => p.Position == "MID");
+            int fwd = currentSquad.Count(p => p.Position == "FWD");
+
+            txtSquadCount.Text = $"Squad: {currentSquad.Count}  |  GK: {gk}  DEF: {def}  MID: {mid}  FWD: {fwd}";
+        }
+
+
+
+
 
         private int PositionOrder(string position)
         {

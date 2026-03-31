@@ -13,8 +13,7 @@ namespace football_project
         public List<SquadPlayerWrapper> Players { get; set; }
 
 
-        [JsonProperty("manager")]
-        public SquadManager Manager { get; set; }
+       
     }
 
 
@@ -36,22 +35,8 @@ namespace football_project
         [JsonProperty("position")]
         public string Position { get; set; }
     }
-    public class SquadManager
-    {
-        [JsonProperty("id")]
-        public int ID { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        [JsonProperty("country")]
-        public SquadManagerCountry Country { get; set; }
-    }
-    public class SquadManagerCountry
-    {
-        [JsonProperty("name")]
-        public string Name { get; set; }
-    }
+   
+  
 
 
 }

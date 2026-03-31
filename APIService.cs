@@ -107,12 +107,10 @@ namespace football_project
             return result;
         }
 
-        // Returns both the squad (List<Player>) and the Manager together
-        // using a tuple so we only need one API call
-        public async Task<(List<Player> Players, Manager Manager)> GetTeamSquadAsync(int teamId, string teamName)
+        // Returns the squad as a (List<Player>)
+        public async Task<List<Player>>GetTeamSquadAsync(int teamId, string teamName)
         {
             List<Player> players = new List<Player>();
-            Manager manager = null;
 
             try
             {
@@ -123,11 +121,10 @@ namespace football_project
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    return (players, manager);
+                    return players;
                 }
 
                 string json = await response.Content.ReadAsStringAsync();
-                System.Diagnostics.Debug.WriteLine(json); // ADD THIS
 
                 //deserialize into our specific SquadResponse class
                 //Newtonsoft uses the [JsonProperty] attributes on SquadResponse
@@ -136,15 +133,10 @@ namespace football_project
 
                 if (data == null)
                 {
-                    return (players, manager);
+                    return (players);
                 }
 
-                // Parse manager if present
-                if (data.Manager != null)
-                {
-                    string nationality = data.Manager.Country?.Name ?? "Unknown";
-                    manager = new Manager(data.Manager.ID, data.Manager.Name, nationality, teamName);
-                }
+               
 
                 // Parse players
                 if (data.Players != null)
@@ -181,18 +173,18 @@ namespace football_project
             }
             catch (HttpRequestException)
             {
-                return (players, manager);
+                return (players);
             }
             catch (JsonException)
             {
-                return (players, manager);
+                return (players);
             }
             catch (Exception)
             {
-                return (players, manager);
+                return (players);
             }
 
-            return (players, manager);
+            return (players);
         }
     }
 }
