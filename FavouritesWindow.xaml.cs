@@ -16,7 +16,7 @@ namespace football_project
             LoadFromDatabase("All");
         }
 
-        // LOAD FROM DATABASE
+        //pulls all saved players from the database then applies the current filter
         private void LoadFromDatabase(string filter)
         {
             try
@@ -37,7 +37,7 @@ namespace football_project
             }
         }
 
-        // LINQ FILTER BUTTONS
+        //filters the saved players list by position or date using LINQ
         private void btnLinqFilter_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -82,7 +82,7 @@ namespace football_project
 
 
 
-        // DELETE FROM DATABASE
+        //asks for confirmation before removing a player from the database
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             FavouritePlayer selected = lbxSaved.SelectedItem as FavouritePlayer;

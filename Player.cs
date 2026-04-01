@@ -29,7 +29,7 @@ namespace football_project
         }
 
         //returns a sort order number for a given position string
-        // Moved here from MainWindow so it can be unit tested independently
+        // kept as static method so it can be tested without neding a Player
         public static int GetPositionOrder(string position)
         {
             switch (position)

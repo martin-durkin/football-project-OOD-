@@ -13,7 +13,7 @@ namespace football_project
         private Random rand = new Random();
         private List<Player> currentSquad = new List<Player>();
 
-        // ObservableCollection - UI updates automatically when items added/removed
+        //observableCollection automatically updates the UI when players are added or removed
         private ObservableCollection<Player> favourites = new ObservableCollection<Player>();
 
         private string currentFilter = "All";
@@ -52,14 +52,14 @@ namespace football_project
             lbxTeams.ItemsSource = premierLeagueTeams;
         }
 
-        // TEAM SELECTION
+        //fires when the user selects a team, searches the API and loads the squad
         private async void lbxTeams_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string selectedTeamName = lbxTeams.SelectedItem as string;
 
             if (selectedTeamName == null) return;
 
-            // Reset UI
+            // Reset UI before looking for new team
             lbxPlayers.ItemsSource = null;
             currentSquad.Clear();
             btnAddRandomPlayer.IsEnabled = false;
@@ -76,7 +76,7 @@ namespace football_project
                     ShowDialog("Could not find that team in the API.");
                     return;
                 }
-
+                //find the mens team with an exact name match
                 Team matchedTeam = null;
 
                 for (int i = 0; i < foundTeams.Count; i++)
@@ -96,11 +96,11 @@ namespace football_project
                     return;
                 }
 
-                // GetTeamSquadAsync returns both players and manager as a tuple
+                // GetTeamSquadAsync returns players
                 currentSquad = await api.GetTeamSquadAsync(matchedTeam.ID, matchedTeam.Name);
 
 
-                              
+
 
                 if (currentSquad == null || currentSquad.Count == 0)
                 {
@@ -108,14 +108,14 @@ namespace football_project
                     return;
                 }
 
-                // LINQ - sort by position order then name
+                // LINQ - sort by position order then alphabeically by name
                 currentSquad = currentSquad
                     .OrderBy(p => Player.GetPositionOrder(p.Position))
                     .ThenBy(p => p.Name)
                     .ToList();
 
                 ApplyFilter();
-                UpdateSquadCounter();   
+                UpdateSquadCounter();
                 btnAddRandomPlayer.IsEnabled = true;
             }
             catch (Exception ex)
@@ -124,7 +124,7 @@ namespace football_project
             }
         }
 
-        // FILTERING AND SEARCHING
+        //filtering and searching
         private void btnFilter_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -138,6 +138,9 @@ namespace football_project
             ApplyFilter();
         }
 
+
+
+        //filters the squad listbox by the selected position and search text
         private void ApplyFilter()
         {
             if (currentSquad == null || currentSquad.Count == 0)
@@ -165,7 +168,7 @@ namespace football_project
         }
 
 
-        //Squad counter
+        //squad counter
         private void UpdateSquadCounter()
         {
             if (currentSquad == null || currentSquad.Count == 0)
@@ -187,10 +190,10 @@ namespace football_project
 
 
 
- 
 
 
-        //Favourites Management
+
+        //favourites Management
         private void btnAddPlayer_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -248,7 +251,6 @@ namespace football_project
 
 
         //removes the selected player from the selected players listbox
-
         private void btnRemovePlayer_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -270,7 +272,8 @@ namespace football_project
             }
         }
 
-        // DATABASE - STUBBED UNTIL EF CORE IS ADDED
+
+        //saves all current favourites to the database, skipping any that already exist
 
         private void btnSaveFavourites_Click(object sender, RoutedEventArgs e)
         {
@@ -324,9 +327,8 @@ namespace football_project
                 ShowDialog("Error saving: " + ex.Message);
             }
         }
-        
 
-        // NAVIGATION
+
         private void btnViewSaved_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -340,7 +342,7 @@ namespace football_project
             }
         }
 
-        // HELPERS
+        //checks if a player is already in the favourites list by ID and team
         private bool PlayerAlreadySelected(Player p)
         {
             // LINQ - check for duplicate by ID and TeamID
@@ -353,11 +355,6 @@ namespace football_project
             new DialogWindow(this, message).ShowDialog();
         }
 
-        private bool ShowConfirm(string message)
-        {
-            var dlg = new DialogWindow(this, message, true);
-            dlg.ShowDialog();
-            return dlg.Result;
-        }
+        
     }
 }

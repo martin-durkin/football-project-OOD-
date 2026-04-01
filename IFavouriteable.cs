@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace football_project
 {
+    //any class that can be favourited must implement this interface
     public interface IFavouriteable
     {
         int ID { get; set; }

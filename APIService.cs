@@ -26,7 +26,9 @@ namespace football_project
             }
         }
 
-        public async Task<List<Team>> SearchTeamsAsync(string searchText) 
+        //searches the API for teams matching the given text and returns any that are type "team"
+
+        public async Task<List<Team>> SearchTeamsAsync(string searchText)
         {
             List<Team> result = new List<Team>();
 
@@ -52,7 +54,7 @@ namespace football_project
                 string json = await response.Content.ReadAsStringAsync(); //Reads the response body as a plain string of JSON
                 dynamic data = JsonConvert.DeserializeObject(json);  //dynamic- reading it loosely- not assigning it to specific class
 
-                //if json is empty or doesnt contain a results fied, return early
+                //if json is empty or doesnt contain a results field, return early
                 if (data == null || data.results == null)
                 {
                     return result;
@@ -60,8 +62,6 @@ namespace football_project
 
 
                 //Loops through every result
-                //The search API returns a mix of players, teams, and tournaments
-                //so we check type == "team" to only keep the team results.
                 for (int i = 0; i < data.results.Count; i++)
                 {
                     var item = data.results[i];
@@ -107,8 +107,8 @@ namespace football_project
             return result;
         }
 
-        // Returns the squad as a (List<Player>)
-        public async Task<List<Player>>GetTeamSquadAsync(int teamId, string teamName)
+        //fetches the full squad for a given team ID and returns a list of Player objects
+        public async Task<List<Player>> GetTeamSquadAsync(int teamId, string teamName)
         {
             List<Player> players = new List<Player>();
 
@@ -136,7 +136,7 @@ namespace football_project
                     return (players);
                 }
 
-               
+
 
                 // Parse players
                 if (data.Players != null)
@@ -147,6 +147,7 @@ namespace football_project
 
                         if (item != null && item.Player != null)
                         {
+                            //convert single letter position codes from the API to readable abbreviations
                             string position = "";
 
                             if (item.Player.Position != null)

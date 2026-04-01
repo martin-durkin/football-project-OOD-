@@ -6,7 +6,7 @@ namespace football_project
     {
         public bool Result { get; private set; } = false;
 
-        // Info dialog - just OK button
+        //basic info dialog with a single OK button
         public DialogWindow(Window owner, string message)
         {
             InitializeComponent();
@@ -14,7 +14,7 @@ namespace football_project
             txtMessage.Text = message;
         }
 
-        // Confirm dialog - YES and NO buttons
+        //confirm dialog - YES and NO buttons
         public DialogWindow(Window owner, string message, bool isConfirm)
         {
             InitializeComponent();

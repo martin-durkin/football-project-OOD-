@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace football_project
 {
+    //represents a player that is saved to the db
     public class FavouritePlayer
     {
         public int FavouritePlayerID { get; set; }  // EF needs a primary key
