@@ -28,6 +28,20 @@ namespace football_project
             DateAdded = DateTime.Now;
         }
 
+        //returns a sort order number for a given position string
+        // Moved here from MainWindow so it can be unit tested independently
+        public static int GetPositionOrder(string position)
+        {
+            switch (position)
+            {
+                case "GK": return 1;
+                case "DEF": return 2;
+                case "MID": return 3;
+                case "FWD": return 4;
+                default: return 5;
+            }
+        }
+
         public override string GetSummary()
         {
             return $"{Name} - {Position} ({TeamName})";

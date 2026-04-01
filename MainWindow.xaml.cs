@@ -110,7 +110,7 @@ namespace football_project
 
                 // LINQ - sort by position order then name
                 currentSquad = currentSquad
-                    .OrderBy(p => PositionOrder(p.Position))
+                    .OrderBy(p => Player.GetPositionOrder(p.Position))
                     .ThenBy(p => p.Name)
                     .ToList();
 
@@ -187,22 +187,7 @@ namespace football_project
 
 
 
-        private int PositionOrder(string position)
-        {
-            switch (position)
-            {
-                case "GK":
-                    return 1;
-                case "DEF":
-                    return 2;
-                case "MID":
-                    return 3;
-                case "FWD":
-                    return 4;
-                default:
-                    return 5;
-            }
-        }
+ 
 
 
         //Favourites Management
